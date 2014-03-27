@@ -1,15 +1,16 @@
 corpus = ca_pa_djedi
-original_dir = original
-files := $(basename $(notdir $(wildcard $(original_dir)/*.xml)))
+original_dir = intermediate
+really_original = original
+files := $(basename $(notdir $(wildcard $(really_original)/*.xml)))
 
-vrt_columns_annotations = word pos tags trans
-vrt_columns             = word pos tags trans
+vrt_columns_annotations = word pos tags trans ref dephead
+vrt_columns             = word pos tags trans ref dephead
 
 vrt_structs_annotations = sentence.id sentence paragraph.n
 vrt_structs             = sentence:id sentence paragraph
 
-xml_elements    = word  word:pos  word:tags  word:trans  text
-xml_annotations = token token.pos token.tags token.trans text
+xml_elements    = word  word:pos  word:tags  word:trans  word:ref  word:dephead  text s        p
+xml_annotations = token token.pos token.tags token.trans token.ref token.dephead text sentence paragraph
 
 # Using tag word for words
 
@@ -25,12 +26,17 @@ include ../Makefile.common
 
 include ../Makefile.rules
 
-%.paragraph : %.token.n %.token.pos
-	$(python) -m sb.pos_segment --pos_segment --out $@ --text $(1) --pos $(2) --delimiter NIhO --element paragraph
+define segment_rule
+$(root)$(original_dir)/$(1).tk.xml: $(root)$(really_original)/$(1).xml
+	mkdir -p $(root)$(original_dir)
+	python -m sb.segment_crude --in_file $$(1) --out_file $$@ --cmd segment
 
-%.sentence: %.token.n %.token.pos
-	$(python) -m sb.pos_segment --pos_segment --out $@ --text $(1) --pos $(2) --delimiter "I|NIhO" --element sentence
+$(root)$(original_dir)/$(1).xml: $(root)$(original_dir)/$(1).tk.xml
+	mkdir -p $(root)$(original_dir)
+	python -m sb.segment_crude --in_file $$(1) --out_file $$@ --cmd parse
+endef
 
+$(foreach file,$(files),$(eval $(call segment_rule,$(file))))
 
 ## vrt_columns_annotations = word trans tags
 ## vrt_columns             = word trans tags

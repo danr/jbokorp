@@ -243,32 +243,6 @@ attrs.tags = {
 attrs.pos = {
     label : "pos",
     displayType : "select",
-    translationKey : "pos_",
-    dataset : {
-        "AB" : "AB",
-        "MID|MAD|PAD" : "DL",
-        "DT" : "DT",
-        "HA" : "HA",
-        "HD" : "HD",
-        "HP" : "HP",
-        "HS" : "HS",
-        "IE" : "IE",
-        "IN" : "IN",
-        "JJ" : "JJ",
-        "KN" : "KN",
-        "NN" : "NN",
-        "PC" : "PC",
-        "PL" : "PL",
-        "PM" : "PM",
-        "PN" : "PN",
-        "PP" : "PP",
-        "PS" : "PS",
-        "RG" : "RG",
-        "RO" : "RO",
-        "SN" : "SN",
-        "UO" : "UO",
-        "VB" : "VB"
-    },
     opts : settings.liteOptions,
     extended_template : selectType.extended_template,
     controller : selectType.controller,
@@ -557,8 +531,8 @@ var modernAttrs = {
 
 settings.corporafolders = {};
 
-settings.corporafolders.selpahi = {
-    title : "selpa'i",
+settings.corporafolders.korpora = {
+    title : "korpora",
     contents : ["ca_pa_djedi"]
 };
 
@@ -569,14 +543,17 @@ settings.corporafolders.selpahi = {
  */
 
 settings.corpora.ca_pa_djedi = {
+    title : "korpora",
     id : "ca_pa_djedi",
-    title : "Ca Pa Djedi",
     description : "",
     within : settings.spWithin,
     context : settings.spContext,
     attributes : {
+        pos: attrs.pos,
         tags: attrs.tags,
-        trans: attrs.trans
+        trans: attrs.trans,
+        dephead: attrs.dephead,
+        deprel: attrs.deprel
     },
     struct_attributes : {
     }
