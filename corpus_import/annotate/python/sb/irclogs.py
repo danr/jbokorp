@@ -2,74 +2,115 @@ import util
 import re
 import subprocess
 
-name = []
-datename_digit = []
-datename_string = []
-timename = []
-junk = []
+matchers = []
 
 # ircname = r"/\A[a-z_\-\[\]\\^{}|`][a-z0-9_\-\[\]\\^{}|`]*\z/i"
 ircname = r"\S*"
 
 # Broca: oi le dei velsku
-name.append(re.compile(r"^\s?(" + ircname + r"): (.*)$"))
+matchers.append(re.compile(r"^\s?(?P<nick>" + ircname + r"): (?P<msg>.*)$"))
 
 # <Broca> go'i
-name.append(re.compile(r"^<\s?(" + ircname + r")> (.*)$"))
+matchers.append(re.compile(r"^<\s?(?P<nick>" + ircname + r")> (?P<msg>.*)$"))
+
+# 01 Aug 2003 02:10:18
+pretty_full_date = r"(?P<day>\d{2}) (?P<pretty_month>\S{3}) (?P<year>\d{4}) (?P<hour>\d{2}):(?P<min>\d{2}):(?P<sec>\d{2})"
+
+# 01 Aug 2003 02:10
+pretty_mini_date = r"(?P<day>\d{2}) (?P<pretty_month>\S{3}) (?P<year>\d{4}) (?P<hour>\d{2}):(?P<min>\d{2})"
+
+# 2014-03-28 12:13:11 PDT/-0700
+digit_date = r"(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2}) (?P<hour>\d{2}):(?P<min>\d{2}):(?P<sec>\d{2}) ...\/....."
+
+# [19:39]
+brack_time = r"\[(?P<hour>\d{2}):(?P<min>\d{2})\]"
 
 # 01 Aug 2003 02:10:18 <carbon> la'o gy. gyrations gy.
-datename_string.append(re.compile(r"^(\d{2}) (\S{3}) (\d{4}) (\d{2}):(\d{2}):(\d{2}) <\s?(" + ircname + r")> (.*)$"))
+matchers.append(re.compile(r"^" + pretty_full_date + r" <\s?(?P<nick>" + ircname + r")> (?P<msg>.*)$"))
+
+# 20 Sep 2010 15:22 < jaupre> no.
+matchers.append(re.compile(r"^" + pretty_mini_date + r" <\s?(?P<nick>" + ircname + r")> (?P<msg>.*)$"))
 
 # 20 Jan 2010 07:21:58  * codrus na'e co'e cusku da poi ve vimcu de noi vo'a jinvi fi ra
 # 11 Jun 2008 20:46:50 * durka cu slilu lo stedu
-datename_string.append(re.compile(r"^(\d{2}) (\S{3}) (\d{4}) (\d{2}):(\d{2}):(\d{2}) \s?\* ((" + ircname + r") .*)$"))
-
-# 20 Sep 2010 15:22 < jaupre> no.
-datename_string.append(re.compile(r"^(\d{2}) (\S{3}) (\d{4}) (\d{2}):(\d{2}) <\s?(" + ircname + r")> (.*)$"))
-# TODO: no seconds!
+matchers.append(re.compile(r"^" + pretty_full_date + r" \s?\* (?P<msg> (?P<nick>" + ircname + r") .*)$"))
 
 # 23 Sep 2010 16:09  * rlpowell terpa
-datename_string.append(re.compile(r"^(\d{2}) (\S{3}) (\d{4}) (\d{2}):(\d{2}) \s?\* ((" + ircname + r") .*)$"))
-# TODO: no seconds!
+matchers.append(re.compile(r"^" + pretty_mini_date + r" \s?\* (?P<msg> (?P<nick>" + ircname + r") .*)$"))
+
 
 # 2014-03-28 12:13:11 PDT/-0700 <danr> .u'i
-datename_digit.append(re.compile(r"^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2}) ...\/..... <\s?(" + ircname + r")> (.*)$"))
+matchers.append(re.compile(r"^" + digit_date + r" <\s?(?P<nick>" + ircname + r")> (?P<msg>.*)$"))
 
 # 2014-03-26 13:49:13 PDT/-0700 * durka42 cu nitcu lo nu cliva
-datename_digit.append(re.compile(r"^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2}) ...\/..... \s?\* ((" + ircname + r") .*)$"))
+matchers.append(re.compile(r"^" + digit_date + r" \s?\* (?P<msg> (?P<nick>" + ircname + r") .*)$"))
 
 # [19:39] <Broca> coi zinks
-timename.append(re.compile(r"^\[(\d{2}):(\d{2})\] \s?(<" + ircname +r">) (.*)$"))
+matchers.append(re.compile(r"^" + brack_time + r" \s?\* (?P<msg> (?P<nick>" + ircname + r") .*)$"))
 
 # [22:06] *** bancus sezgletu
-timename.append(re.compile(r"^\[(\d{2}):(\d{2})\] ... \s?((" + ircname +r") .*)$"))
+matchers.append(re.compile(r"^" + brack_time + r" \s?\*\*\* \s?(?P<msg> (?P<nick>" + ircname + r") .*)$"))
 
 # 19 Jan 2010 20:01:06 -!- vesna [i=4d7c290c@gateway/web/freenode/x-xprmfgfzgrnhorgn] has joined #lojban
-junk.append(re.compile(r"^(\d{2}) (\S{3}) (\d{4}) (\d{2}):(\d{2}):(\d{2}) -!-"))
-junk.append(re.compile(r"^(\d{2}) (\S{3}) (\d{4}) (\d{2}):(\d{2}) -!-"))
+matchers.append(re.compile(r"^" + pretty_full_date + r" -!-"))
+matchers.append(re.compile(r"^" + pretty_mini_date + r" -!-"))
 
-matchers = sum([name,datename_digit,datename_string,timename,junk],[])
+months = dict(zip(["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],range(1,13)))
 
-def segment_crude(in_file,out_file):
+def parse_irc(in_file):
 
     with open(in_file) as f:
         lines = f.readlines()
         f.close()
 
+    print "<text>"
+
     for l in lines:
         match = False
         for m in matchers:
-            if m.search(l):
-                match = True
-        if not match:
-            print l
+            d = m.match(l)
+            if d is not None:
+                d = d.groupdict()
+                if d.get('msg'):
 
-    # with open(out_file,'w') as f:
-    #     f.write(''.join(out))
-    #     f.close()
+                    if d.get('pretty_month'):
+                        d['month'] = "%02d" % months[d['pretty_month']]
+
+                    y, m, day = d.get('year'), d.get('month'), d.get('day')
+
+                    date = None
+                    if y and m and day:
+                        date = y + "-" + m + "-" + day
+
+                    if not d.get('sec'):
+                        d['sec'] = "00"
+
+                    hh, mm, ss = d.get('hour'), d.get('min'), d.get('sec')
+
+                    time = None
+                    if hh and mm and ss:
+                        time = hh + ":" + mm + ":" + ss
+
+                    out = "<msg "
+                    if date:
+                        out += 'date="' + date + '" '
+
+                    if time:
+                        out += 'time="' + time + '" '
+
+                    out += 'nick="' + d["nick"] + '">'
+
+                    print out
+                    print d["msg"]
+                    print "</msg>"
+
+        # if not match:
+        #     print l
+
+    print "</text>"
 
 if __name__ == '__main__':
-    util.run.main(segment_crude)
+    util.run.main(parse_irc)
 
 
 
