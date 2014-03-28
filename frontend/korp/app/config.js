@@ -145,7 +145,7 @@ settings.spWithin = {
     "paragraph" : "paragraph"
 };
 
-settings.defaultLanguage = "sv";
+settings.defaultLanguage = "en";
 
 /*
  * ATTRIBUTES
@@ -449,6 +449,14 @@ sattrs.date = {
     label : "date",
     displayType : "date"
 };
+sattrs.nick = {
+    label : "nick",
+    displayType : "autocomplete"
+};
+sattrs.time = {
+    label : "time",
+    displayType : "text"
+};
 
 settings.common_struct_types = {
     date_interval : {
@@ -533,7 +541,7 @@ settings.corporafolders = {};
 
 settings.corporafolders.korpora = {
     title : "korpora",
-    contents : ["ca_pa_djedi"]
+    contents : ["ca_pa_djedi","irclogs"]
 };
 
 
@@ -556,6 +564,25 @@ settings.corpora.ca_pa_djedi = {
         deprel: attrs.deprel
     },
     struct_attributes : {
+    }
+};
+
+settings.corpora.irclogs = {
+    title : "IRC logs",
+    id : "irclogs",
+    description : "",
+    within : settings.spWithin,
+    context : settings.spContext,
+    attributes : {
+        pos: attrs.pos,
+        tags: attrs.tags,
+        trans: attrs.trans,
+        dephead: attrs.dephead,
+        deprel: attrs.deprel
+    },
+    struct_attributes : {
+        text_nick: sattrs.nick,
+        text_date: sattrs.date
     }
 };
 
