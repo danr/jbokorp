@@ -1,3 +1,4 @@
+from xml.sax.saxutils import escape
 import util
 import re
 import subprocess
@@ -57,16 +58,21 @@ matchers.append(re.compile(r"^" + pretty_mini_date + r" -!-"))
 
 months = dict(zip(["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],range(1,13)))
 
-def parse_irc(in_file):
+INFINITY = 987654321
+MSGS_PER_FILE = 10000
 
-    with open(in_file) as f:
-        lines = f.readlines()
-        f.close()
+def parse_irc(in_file, out_prefix):
 
-    print "<text>"
+    with open(in_file) as g:
+        lines = g.readlines()
+        g.close()
+
+    printed = INFINITY;
+    num = 0
+
+    f = None
 
     for l in lines:
-        match = False
         for m in matchers:
             d = m.match(l)
             if d is not None:
@@ -100,14 +106,24 @@ def parse_irc(in_file):
 
                     out += 'nick="' + d["nick"] + '">'
 
-                    print out
-                    print d["msg"]
-                    print "</msg>"
+                    if printed > MSGS_PER_FILE:
+                        printed = 0
+                        if f is not None:
+                            f.write("</text>\n")
+                            f.close()
+                        f = open(out_prefix + str(num) + ".xml",'w')
+                        f.write("<text>\n")
+                        num += 1
+                    else:
+                        printed += 1
 
-        # if not match:
-        #     print l
+                    f.write(out + "\n")
+                    f.write(escape(d["msg"]) + "\n")
+                    f.write("</msg>\n")
 
-    print "</text>"
+    if f is not None:
+        f.write("</text>\n")
+        f.close()
 
 if __name__ == '__main__':
     util.run.main(parse_irc)
