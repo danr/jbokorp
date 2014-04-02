@@ -1,4 +1,4 @@
-corpus = ca_pa_djedi
+corpus = ralju
 original_dir = intermediate
 really_original = original
 files := $(basename $(notdir $(wildcard $(really_original)/*.xml)))
