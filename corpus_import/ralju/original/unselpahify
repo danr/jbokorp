@@ -1,0 +1,2 @@
+#!/bin/bash
+sed -e 's/à/a/g' -e 's/è/e/g' -e 's/ì/i/g' -e 's/ò/o/g' -e 's/ù/u/g' -e 's/ĭ/i/g' -e 's/ŭ/u/g' $1
