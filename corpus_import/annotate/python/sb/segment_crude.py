@@ -1,9 +1,8 @@
-import xml.etree.ElementTree as ET
+from bs4 import BeautifulSoup
+from unidecode import unidecode
 import util
 import re
 import subprocess
-
-xml_line = re.compile(r"^\s*<.*>\s*$")
 
 def tokenise(cmd,txt):
     p = subprocess.Popen(cmd,
@@ -28,37 +27,16 @@ def segment_crude(in_file,out_file,cmd):
                 return parse
         run_cmd = g
 
-    with open(in_file) as f:
-        lines = f.readlines()
-        f.close()
+    soup = BeautifulSoup(open(in_file), "html.parser")
 
-    chunks = []
-    last_xml = True
-    out = []
+    for s in list(soup.strings):
+        if len(s.strip()) > 0:
+            txt = unidecode(s)
+            txt_soup = BeautifulSoup(unidecode(run_cmd(txt)), "html.parser")
+            s.replace_with(txt_soup)
 
-    for l in lines:
-        if xml_line.search(l):
-            # is an xml line
-            if not last_xml:
-                out.append(run_cmd(' '.join(chunks)))
-                chunks = []
-            out.append(l)
-            last_xml = True
-        else:
-            chunks.append(l)
-            last_xml = False
-
-    if len(chunks) > 0:
-        out.append(run_cmd(' '.join(chunks)))
-
-    # print ''.join(out)
-
-    with open(out_file,'w') as f:
-        f.write(''.join(out))
-        f.close()
-
+    open(out_file,"w").write(unidecode(unicode(soup)))
+    
 if __name__ == '__main__':
     util.run.main(segment_crude)
-
-
 
