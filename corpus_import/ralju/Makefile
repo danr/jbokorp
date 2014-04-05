@@ -6,8 +6,8 @@ files := $(basename $(notdir $(wildcard $(really_original)/*.xml)))
 vrt_columns_annotations = word pos tags trans ref dephead
 vrt_columns             = word pos tags trans ref dephead
 
-vrt_structs_annotations = sentence.id sentence paragraph.n text.date text.title text.author text.original_author text.url 
-vrt_structs             = sentence:id sentence paragraph   text:date text:title text:author text:original_author text:url 
+vrt_structs_annotations = sentence.id sentence paragraph.n text.date text.title text.author text.original_author text.url text.datefrom text.dateto
+vrt_structs             = sentence:id sentence paragraph   text:date text:title text:author text:original_author text:url text:datefrom text:dateto
 
 xml_elements    = word  word:pos  word:tags  word:trans  word:ref  word:dephead  text text:date text:title text:author text:original_author text:url s        p
 xml_annotations = token token.pos token.tags token.trans token.ref token.dephead text text.date text.title text.author text.original_author text.url sentence paragraph
