@@ -26,12 +26,12 @@ upper  = re.compile(r"contains invalid uppercase")
 
 def is_lojban(s):
     """
-    Does this string seem to be in lojban? 
-    
+    Does this string seem to be in lojban?
+
     Morphology checked by vlatai, uses the same alogrithm as for the irc logs.
     """
     words = [dot.sub("",unidecode(w)) for w in s.split()]
-    out, _ = call("/home/dan/code/jbofihe/vlatai","\n".join(words))
+    out, _ = call("vlatai","\n".join(words))
 
     total_count  = len(out.split('\n')) - 1
 
@@ -46,7 +46,7 @@ def is_lojban(s):
 
     if total_count > 0:
         score = (good_count + cmevla_count * 0.4) / total_count
-    else: 
+    else:
         score = 0
 
     needed = 0.8
@@ -59,7 +59,7 @@ def is_lojban(s):
         needed = 0.6
     elif total_count == 3:
         needed = 0.66
-    
+
     return score > needed
 
     print

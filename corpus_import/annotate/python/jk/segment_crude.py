@@ -17,12 +17,12 @@ def tokenise(cmd,txt):
 def segment_crude(in_file,out_file,cmd):
 
     if cmd == "segment":
-        run_cmd = lambda txt : tokenise("/home/dan/code/jbofihe/cmafihe -t",txt)[0]
+        run_cmd = lambda txt : tokenise("cmafihe -t",txt)[0]
     elif cmd == "parse":
         def g(txt):
-            parse, excode = tokenise("/home/dan/code/jbofihe/jbofihe -X",txt)
+            parse, excode = tokenise("jbofihe -X",txt)
             if excode:
-                return tokenise("/home/dan/code/jbofihe/cmafihe -X",txt)[0]
+                return tokenise("cmafihe -X",txt)[0]
             else:
                 return parse
         run_cmd = g
@@ -36,7 +36,7 @@ def segment_crude(in_file,out_file,cmd):
             s.replace_with(txt_soup)
 
     open(out_file,"w").write(unidecode(unicode(soup)))
-    
+
 if __name__ == '__main__':
     util.run.main(segment_crude)
 

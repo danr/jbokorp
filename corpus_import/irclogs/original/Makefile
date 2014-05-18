@@ -8,7 +8,7 @@ all_logs.txt: irclogs.zip
 	touch $@
 
 irc0.xml: all_logs.txt
-	python -m sb.irclogs --in_file $< --out_prefix irc
+	python -m jk.irclogs --in_file $< --out_prefix irc
 
 miniclean:
 	rm -f irc*.xml
