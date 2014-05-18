@@ -11,3 +11,9 @@ endef
 
 $(foreach file,$(files),$(eval $(call segment_rule,$(file))))
 
+%.token.rafsi: %.token.word %.token.pos
+	$(python) -m jk.compounds --make_rafsi --word $(1) --pos $(2) --out $@
+
+%.token.longrafsi: %.token.rafsi
+	$(python) -m jk.compounds --make_longrafsi --rafsi $(1) --out $@
+
