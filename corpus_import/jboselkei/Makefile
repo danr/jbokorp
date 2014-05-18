@@ -30,15 +30,5 @@ include ../Makefile.common
 
 include ../Makefile.rules
 
-define segment_rule
-$(root)$(original_dir)/$(1).tk.xml: $(root)$(really_original)/$(1).xml
-	mkdir -p $(root)$(original_dir)
-	python -m sb.segment_crude --in_file $$(1) --out_file $$@ --cmd segment
-
-$(root)$(original_dir)/$(1).xml: $(root)$(original_dir)/$(1).tk.xml
-	mkdir -p $(root)$(original_dir)
-	python -m sb.segment_crude --in_file $$(1) --out_file $$@ --cmd parse
-endef
-
-$(foreach file,$(files),$(eval $(call segment_rule,$(file))))
+include ../Makefile.jbo
 

@@ -1,10 +1,10 @@
 
-import util
+import sb.util as util
 import os
 import re
 import subprocess
 
-from sb.islojban import is_lojban
+import is_lojban
 
 from bs4 import BeautifulSoup, UnicodeDammit
 from unidecode import unidecode

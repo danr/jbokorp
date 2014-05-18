@@ -1,5 +1,5 @@
 from xml.sax.saxutils import escape
-import util
+import sb.util as util
 import re
 import subprocess
 

@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 from unidecode import unidecode
-import util
+import sb.util as util
 import re
 import subprocess
 
