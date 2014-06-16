@@ -1,7 +1,9 @@
 from xml.sax.saxutils import escape
+import lxml.etree as ET
 import sb.util as util
 import re
 import subprocess
+from unidecode import unidecode
 
 matchers = []
 
@@ -58,75 +60,74 @@ matchers.append(re.compile(r"^" + pretty_mini_date + r" -!-"))
 
 months = dict(zip(["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],range(1,13)))
 
-INFINITY = 987654321
 MSGS_PER_FILE = 10000
 
-def parse_irc(in_file, out_prefix):
+written = {}
+store   = {}
+items   = {}
 
-    with open(in_file) as g:
-        lines = g.readlines()
-        g.close()
+def banned(nick):
+    return nick == "livla" or nick == "mensi"
 
-    printed = INFINITY;
-    num = 0
+def add_msg(d):
+    year = d.get('year', "undef")
+    if not year in store:
+        store[year] = ET.Element('text')
+    root = store[year]
+    try:
+        msg = ET.SubElement(root, 'msg',
+            date=d.get('date',''),
+            time=d.get('time',''),
+            nick=d['nick'])
+        msg.text = unicode(unidecode(d['msg']))
+        items[year] = items.get(year, 0) + 1
+    except:
+        # print "failed to add ", d['msg'], " to ", year
+        pass
 
-    f = None
+def write_cycle(limit=MSGS_PER_FILE):
+    kill = []
+    for year, amt in items.iteritems():
+        if amt > limit:
+            written[year] = written.get(year, -1) + 1
+            fname = "irc" + year + "-" + str(written[year]) + ".wip"
+            with open(fname, "w") as f:
+                f.write(ET.tostring(store[year], pretty_print = True))
+            print "wrote", fname
+            kill.append(year)
+    for year in kill:
+        items.pop(year, None)
+        store.pop(year, None)
 
-    for l in lines:
+def parse_irc(in_file):
+
+    for l in open(in_file).readlines():
         for m in matchers:
             d = m.match(l)
             if d is not None:
                 d = d.groupdict()
-                if d.get('msg'):
+                if d.get('msg') and not banned(d["nick"]):
 
                     if d.get('pretty_month'):
                         d['month'] = "%02d" % months[d['pretty_month']]
 
                     y, m, day = d.get('year'), d.get('month'), d.get('day')
 
-                    date = None
                     if y and m and day:
-                        date = y + "-" + m + "-" + day
+                        d['date'] = y + "-" + m + "-" + day
 
                     if not d.get('sec'):
                         d['sec'] = "00"
 
                     hh, mm, ss = d.get('hour'), d.get('min'), d.get('sec')
 
-                    time = None
                     if hh and mm and ss:
-                        time = hh + ":" + mm + ":" + ss
+                        d['time'] = hh + ":" + mm + ":" + ss
 
-                    out = "<msg "
-                    if date:
-                        out += 'date="' + date + '" '
-
-                    if time:
-                        out += 'time="' + time + '" '
-
-                    out += 'nick="' + d["nick"] + '">'
-
-                    if printed > MSGS_PER_FILE:
-                        printed = 0
-                        if f is not None:
-                            f.write("</text>\n")
-                            f.close()
-                        f = open(out_prefix + str(num) + ".xml",'w')
-                        f.write("<text>\n")
-                        num += 1
-                    else:
-                        printed += 1
-
-                    f.write(out + "\n")
-                    f.write(escape(d["msg"]) + "\n")
-                    f.write("</msg>\n")
-
-    if f is not None:
-        f.write("</text>\n")
-        f.close()
+                    add_msg(d)
+                    write_cycle()
+    write_cycle(0)
 
 if __name__ == '__main__':
     util.run.main(parse_irc)
-
-
 

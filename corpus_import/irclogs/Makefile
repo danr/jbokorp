@@ -3,8 +3,8 @@ original_dir = intermediate
 really_original = original
 files := $(basename $(notdir $(wildcard $(really_original)/*.xml)))
 
-vrt_columns_annotations = word pos tags trans ref dephead deprel
-vrt_columns             = word pos tags trans ref dephead deprel
+vrt_columns_annotations = word pos tags trans rafsi longrafsi ref dephead deprel
+vrt_columns             = word pos tags trans rafsi longrafsi ref dephead deprel
 
 vrt_structs_annotations = sentence.id sentence paragraph.n text.nick text.date text.time text.datefrom text.dateto
 vrt_structs             = sentence:id sentence paragraph   text:nick text:date text:time text:datefrom text:dateto
