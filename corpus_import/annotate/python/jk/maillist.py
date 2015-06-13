@@ -3,18 +3,18 @@ import re
 
 from datetime import datetime
 
-import dateutil.parser 
+import dateutil.parser
 
-import util
+import sb.util
 
 from xml.sax.saxutils import escape, quoteattr
 
-from sb.islojban import is_lojban
+from jk.islojban import is_lojban
 
 from_re = re.compile("^From ")
 
 # Dates are of lots of forms:
-# Fri, 2 Apr 1993 16:40:37 BST 
+# Fri, 2 Apr 1993 16:40:37 BST
 # Wed, 06 Jun 90 11:44:24 -0700
 # 6 Nov 90 00:02:21 EST (Tue)
 
@@ -39,7 +39,7 @@ def parse(fname):
                 else:
                     dt = mid[1:7]
             # print "dt:", dt
-            
+
             date = None
             try:
                 date = dateutil.parser.parse(dt)
@@ -51,7 +51,7 @@ def parse(fname):
                     # print "Cannot parse", dt
 
             if date is not None and dt != "":
-                if date.year < 2014: 
+                if date.year < 2014:
                     date = date.strftime("%Y-%m-%d")
                 else:
                     date = ""
@@ -90,4 +90,4 @@ def parse(fname):
             chunk.append(l)
 
 if __name__ == "__main__":
-    util.run.main(parse) 
+    sb.util.run.main(parse)

@@ -60,7 +60,7 @@ matchers.append(re.compile(r"^" + pretty_mini_date + r" -!-"))
 
 months = dict(zip(["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],range(1,13)))
 
-MSGS_PER_FILE = 10000
+MSGS_PER_FILE = 10001
 
 written = {}
 store   = {}

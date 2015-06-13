@@ -1,7 +1,5 @@
 # Run:
-#   make miniclean
-#   make wips -B
-#   make xmls -B
+#   make miniclean && make wips -B && make xmls -B
 
 wips: all_logs.txt
 	python -m jk.irclogs --in_file $<
@@ -17,6 +15,7 @@ all_logs.txt: irclogs.zip
 miniclean:
 	rm -f irc*.wip
 	rm irclogs.zip
+	rm -f all_logs.txt
 
 clean:
 	rm -f irc*.xml
@@ -29,8 +28,8 @@ wips = $(wildcard *.wip)
 xmls = $(wips:.wip=.xml)
 
 %.xml: %.wip
-	if [ ! -e $@ ]; then cp $< $@; fi
-	diff $< $@ >/dev/null || cp $< $@
+	if [ ! -e $@ ]; then (echo newfilecopy; cp $< $@;) fi
+	diff $< $@ >/dev/null || (echo difffilecopy; cp $< $@)
 
 xmls: $(xmls)
 
