@@ -2,7 +2,7 @@
 #   make miniclean && make wips -B && make xmls -B
 
 wips: all_logs.txt
-	python -m jk.irclogs --in_file $<
+	python2 -m jk.irclogs --in_file $<
 
 irclogs.zip:
 	wget http://www.lojban.org/irclogs/irclogs.zip
@@ -14,7 +14,7 @@ all_logs.txt: irclogs.zip
 
 miniclean:
 	rm -f irc*.wip
-	rm irclogs.zip
+	rm -f irclogs.zip
 	rm -f all_logs.txt
 
 clean:

@@ -2,11 +2,10 @@
 define segment_rule
 $(root)$(original_dir)/$(1).tk.xml: $(root)$(really_original)/$(1).xml
 	mkdir -p $(root)$(original_dir)
-	python -m jk.segment_crude --in_file $$(1) --out_file $$@ --cmd segment
+	$(python) -m jk.segment_crude --vlatai --in_file $$(1) --out_file $$@
 
 $(root)$(original_dir)/$(1).xml: $(root)$(original_dir)/$(1).tk.xml
-	mkdir -p $(root)$(original_dir)
-	python -m jk.segment_crude --in_file $$(1) --out_file $$@ --cmd parse
+	$(python) -m jk.segment_crude --jbofihe --in_file $$(1) --out_file $$@
 endef
 
 $(foreach file,$(files),$(eval $(call segment_rule,$(file))))
@@ -15,5 +14,14 @@ $(foreach file,$(files),$(eval $(call segment_rule,$(file))))
 	$(python) -m jk.compounds --make_rafsi --word $(1) --pos $(2) --out $@
 
 %.token.longrafsi: %.token.rafsi
-	$(python) -m jk.compounds --make_longrafsi --rafsi $(1) --out $@
+	$(python) -m jk.compounds --make_longrafsi --rafsi $(1) --out $@ --in_pickle $(SB_MODELS)/rafsi.pickle
+
+%.token.pos: %.token.word
+	$(python) -m jk.pos --word $(1) --out $@ --in_pickle $(SB_MODELS)/pos.pickle
+
+%.token.vlatai: %.token.word %.token.pos
+	$(python) -m jk.vlatai --vlatai --word $(1) --pos $(2) --out $@
+
+%.token.exp: %.token.word %.token.vlatai
+	$(python) -m jk.vlatai --experimental --word $(1) --tai $(2) --out $@ --in_pickle $(SB_MODELS)/catni.pickle
 

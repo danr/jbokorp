@@ -3,14 +3,14 @@ original_dir = intermediate
 really_original = original
 files := $(basename $(notdir $(wildcard $(really_original)/*.xml)))
 
-vrt_columns_annotations = word pos tags trans rafsi longrafsi ref dephead deprel
-vrt_columns             = word pos tags trans rafsi longrafsi ref dephead deprel
+vrt_columns_annotations = word pos tags info rafsi longrafsi vlatai exp ref dephead deprel
+vrt_columns             = word pos tags info rafsi longrafsi vlatai exp ref dephead deprel
 
-vrt_structs_annotations = sentence.id sentence paragraph.n text.nick text.date text.time text.datefrom text.dateto
-vrt_structs             = sentence:id sentence paragraph   text:nick text:date text:time text:datefrom text:dateto
+vrt_structs_annotations = sentence.id sentence paragraph.n sentence.grammar text.nick text.date text.time text.datefrom text.dateto text.relay
+vrt_structs             = sentence:id sentence paragraph   sentence:grammar text:nick text:date text:time text:datefrom text:dateto text:relay
 
-xml_elements    = word  word:pos  word:tags  word:trans  word:ref  word:dephead  word:deprel  msg:nick  msg:date  msg:time  s        p         msg
-xml_annotations = token token.pos token.tags token.trans token.ref token.dephead token.deprel text.nick text.date text.time sentence paragraph text
+xml_elements    = word  word:tags  word:info  word:ref  word:dephead  word:deprel  msg:nick  msg:date  msg:time  msg:relay  s        s:grammar        p         msg
+xml_annotations = token token.tags token.info token.ref token.dephead token.deprel text.nick text.date text.time text.relay sentence sentence.grammar paragraph text
 
 # Using tag word for words
 

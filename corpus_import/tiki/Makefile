@@ -3,11 +3,11 @@ original_dir = intermediate
 really_original = chunked
 files := $(basename $(notdir $(wildcard $(really_original)/*.xml)))
 
-vrt_columns_annotations = word pos tags trans rafsi longrafsi ref dephead deprel
-vrt_columns             = word pos tags trans rafsi longrafsi ref dephead deprel
+vrt_columns_annotations = word pos tags trans rafsi longrafsi vlatai exp ref dephead deprel
+vrt_columns             = word pos tags trans rafsi longrafsi vlatai exp ref dephead deprel
 
-vrt_structs_annotations = sentence.id sentence paragraph.n text.title 
-vrt_structs             = sentence:id sentence paragraph   text:title 
+vrt_structs_annotations = sentence.id sentence paragraph.n text.title
+vrt_structs             = sentence:id sentence paragraph   text:title
 
 xml_elements    = word  word:pos  word:tags  word:trans  word:ref  word:dephead  word:deprel  text text:title s        p
 xml_annotations = token token.pos token.tags token.trans token.ref token.dephead token.deprel text text.title sentence paragraph
